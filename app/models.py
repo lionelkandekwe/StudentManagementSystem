@@ -2,6 +2,7 @@ from .database import Base
 from sqlalchemy import Column, INTEGER, String, Boolean
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.sql.expression import text
+from pydantic import BaseModel
 
 
 class Student(Base):
@@ -16,3 +17,11 @@ class Student(Base):
     created_at = Column(
         TIMESTAMP(timezone=True), nullable=False, server_default=text("now()")
     )
+
+class StudentModel(BaseModel):
+    firstname: str
+    lastname: str
+    age: int
+    faculty: str
+    address: str
+    handicap: bool = True
