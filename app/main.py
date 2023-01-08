@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, Depends
+from fastapi import FastAPI, status, Depends,HTTPException
 from sqlalchemy.orm import Session
 from . import models
 from .database import engine, get_db
@@ -29,3 +29,13 @@ def register_students(student: StudentModel, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_student)
     return {"data": new_student}
+
+#GET STUDENT BY ID
+@app.get("/students/{id}")
+def get_student(id: int, db: Session = Depends(get_db)):
+    student = db.query(models.Student).filter(models.Student.id == id).first()
+    if not student:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"student with {id} was not found")
+
+    return {"data": student}
