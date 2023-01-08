@@ -21,7 +21,7 @@ def get_students(db: Session = Depends(get_db)):
     return {"data": students}
 
 
-# Register
+# Register New Student
 @app.post("/students", status_code=status.HTTP_201_CREATED)
 def register_students(student: StudentModel, db: Session = Depends(get_db)):
     new_student = models.Student(**student.dict())
