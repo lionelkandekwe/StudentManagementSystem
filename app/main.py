@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, Depends,HTTPException
+from fastapi import FastAPI, status, Depends,HTTPException,Response
 from sqlalchemy.orm import Session
 from . import models
 from .database import engine, get_db
@@ -39,3 +39,16 @@ def get_student(id: int, db: Session = Depends(get_db)):
                             detail=f"student with {id} was not found")
 
     return {"data": student}
+
+# DELETE Student
+
+@app.delete("/students/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_student(id: int, db: Session = Depends(get_db)):
+    student = db.query(models.Student).filter(models.Student.id == id)
+    if student.first() == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"student wiht id: {id} does not exist")
+    student.delete(synchronize_session=False)
+    db.commit()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
