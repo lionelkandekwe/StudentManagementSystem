@@ -1,9 +1,7 @@
 from fastapi import FastAPI, status, Depends,HTTPException,Response
 from sqlalchemy.orm import Session
-from . import models
+from . import models,schemas
 from .database import engine, get_db
-from .models import StudentModel
-
 
 # Create model
 models.Base.metadata.create_all(bind=engine)
@@ -23,7 +21,7 @@ def get_students(db: Session = Depends(get_db)):
 
 # Register New Student
 @app.post("/students", status_code=status.HTTP_201_CREATED)
-def register_students(student: StudentModel, db: Session = Depends(get_db)):
+def register_students(student: schemas.StudentCreate, db: Session = Depends(get_db)):
     new_student = models.Student(**student.dict())
     db.add(new_student)
     db.commit()
@@ -56,7 +54,7 @@ def delete_student(id: int, db: Session = Depends(get_db)):
 # Update Student
 
 @app.put("/students/{id}")
-def update_student(id: int, updated_student: StudentModel, db: Session = Depends(get_db)):
+def update_student(id: int, updated_student: schemas.StudentBase, db: Session = Depends(get_db)):
     student_query = db.query(models.Student).filter(models.Student.id == id)
     student = student_query.first()
     if student == None:
