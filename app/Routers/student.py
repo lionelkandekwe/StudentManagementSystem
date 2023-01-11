@@ -5,19 +5,22 @@ from ..database import get_db
 from .. import schemas,models
 
 
-router=APIRouter()
+router=APIRouter(
+    prefix="/students",
+    tags=["Students"]
+)
 
 # GET ALL STUDENTS
 
 
-@router.get("/students",response_model=List[schemas.Student])
+@router.get("/",response_model=List[schemas.Student])
 def get_students(db: Session = Depends(get_db)):
     students = db.query(models.Student).all()
     return  students
 
 
 # Register New Student
-@router.post("/students", status_code=status.HTTP_201_CREATED,response_model=schemas.Student)
+@router.post("/", status_code=status.HTTP_201_CREATED,response_model=schemas.Student)
 def register_students(student: schemas.StudentCreate, db: Session = Depends(get_db)):
     new_student = models.Student(**student.dict())
     db.add(new_student)
@@ -26,7 +29,7 @@ def register_students(student: schemas.StudentCreate, db: Session = Depends(get_
     return new_student
 
 #GET STUDENT BY ID
-@router.get("/students/{id}",response_model=schemas.Student)
+@router.get("/{id}",response_model=schemas.Student)
 def get_student(id: int, db: Session = Depends(get_db)):
     student = db.query(models.Student).filter(models.Student.id == id).first()
     if not student:
@@ -37,7 +40,7 @@ def get_student(id: int, db: Session = Depends(get_db)):
 
 # DELETE Student
 
-@router.delete("/students/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_student(id: int, db: Session = Depends(get_db)):
     student = db.query(models.Student).filter(models.Student.id == id)
     if student.first() == None:
@@ -50,7 +53,7 @@ def delete_student(id: int, db: Session = Depends(get_db)):
 
 # Update Student
 
-@router.put("/students/{id}",response_model=schemas.Student)
+@router.put("/{id}",response_model=schemas.Student)
 def update_student(id: int, updated_student: schemas.StudentBase, db: Session = Depends(get_db)):
     student_query = db.query(models.Student).filter(models.Student.id == id)
     student = student_query.first()
