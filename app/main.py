@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from . import models,schemas
+from . import models
 from .database import engine
 from .Routers import student,user
 
